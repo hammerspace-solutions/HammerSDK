@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Emacs things not to include
+\#*
+
 # C extensions
 *.so
 

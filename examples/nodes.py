@@ -150,7 +150,7 @@ class Hammerspace:
 
         log.debug("Setup the HammerClient Connection")
 
-        self.hammer_connection = HammerClient(self.args.host, self.args.port)
+        self.hammer_connection = HammerClient(self.args.host, self.args.port, verify=False)
 
         # Login to Hammerspace environment
 

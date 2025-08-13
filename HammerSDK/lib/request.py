@@ -66,13 +66,15 @@ class Connection:
         host: str,
         port: int,
         timeout: Optional[int] = None,
+        verify: Union[bool, str] = True,
     ):
         self.session = None
         self.host = host
         self.port = port
         self.scheme = 'https'
         self.timeout = timeout
-
+        self.verify = verify
+        
     def is_connected(self) -> bool:
         return self.session is not None
 
@@ -140,8 +142,8 @@ class Connection:
 
         self.prepare_and_send(method, body)
 
-        # The API might have passed back that a task was created. If so, then query the task until
-        # we get a response... Otherwise, move on...
+        # The API might have passed back that a task was created. If so, then query
+        # the task until we get a response... Otherwise, move on...
 
         if not no_delay:
             self.query_task(self.response, request_content_type)
@@ -153,9 +155,10 @@ class Connection:
 
         return self.parse_response()
 
-    # In some cases, we might have to make another HTTP call because we got a task ID as a return to a previous call
-    # This means that the previous function in the API created a task and didn't return anything meaningful
-    # Now, we have to query the task and grab the end result once it completes
+    # In some cases, we might have to make another HTTP call because we got a task ID
+    # as a return to a previous call. This means that the previous function in the
+    # API created a task and didn't return anything meaningful. Now, we have to query
+    # the task and grab the end result once it completes
 
     def query_task(self,
                    prev_response: requests.Response,
@@ -163,8 +166,9 @@ class Connection:
 
         if prev_response.status_code == 202:
 
-            # If the headers from the previous response have a Location tag, that indicates that a task is running
-            # We will need to loop until the task is completed
+            # If the headers from the previous response have a Location tag, that
+            # indicates that a task is running. We will need to loop until the task
+            # is completed
 
             # Get the Task URI if it exists
 
@@ -226,7 +230,7 @@ class Connection:
             self.response = self.session.send(prepped,
                                               stream=False,
                                               timeout=self.timeout,
-                                              verify=False,
+                                              verify=self.verify,
                                               cert=None,
                                               proxies=None)
         except (ConnectionError,):

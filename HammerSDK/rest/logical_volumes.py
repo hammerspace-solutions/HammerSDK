@@ -48,6 +48,35 @@ def list_logical_volumes(conninfo: request.Connection) -> Any:
     return _request_processing(conninfo, method, str(uri), headers=header)
 
 
+@request.request
+def create_logical_volume(conninfo: request.Connection,
+                            node_name: str,
+                            device_path: str,
+                            force: Optional[bool] = False) -> Any:
+    """
+    Create a logical volume.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        node_name (str): The name of the node where the volume will be created
+        device_path (str): The device path for the logical volume
+        force (bool, optional): Force the creation of the logical volume. Defaults to False.
+
+    Returns:
+        json object: The newly created logical volume
+    """
+    method = 'POST'
+    uri = UriBuilder(path='/mgmt/v1.2/rest/logical-volumes')
+    header = {'Accept': 'application/json'}
+
+    uri.add_query_param('nodeName', node_name)
+    uri.add_query_param('devicePath', device_path)
+    if force:
+        uri.add_query_param('force', 'true')
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
 # Get one particular logical volume from the Hammerspace environment
 
 @request.request
@@ -88,6 +117,25 @@ def delete_logical_volume(conninfo: request.Connection, volume_id: str) -> Any:
 
     method = 'DELETE'
     uri = f'/mgmt/v1.2/rest/logical-volumes/{volume_id}'
+    header = {'Accept': 'application/json'}
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def discover_logical_volume(conninfo: request.Connection, identifier: str) -> Any:
+    """
+    Discover a logical volume.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        identifier (str): The identifier (UUID) of the logical volume to discover
+
+    Returns:
+        json object: The discovered logical volume information
+    """
+    method = 'GET'
+    uri = f'/mgmt/v1.2/rest/logical-volumes/{identifier}/discover'
     header = {'Accept': 'application/json'}
 
     return _request_processing(conninfo, method, str(uri), headers=header)

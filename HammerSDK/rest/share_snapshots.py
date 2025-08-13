@@ -54,28 +54,53 @@ def list_snapshot_schedules(conninfo: request.Connection) -> Any:
     return _request_processing(conninfo, method, str(uri), headers=header)
 
 
-# Get list of snapshots for a particular share in the Hammerspace environment
-
 @request.request
-def get_snapshot_list(conninfo: request.Connection, share_id: str) -> Any:
+def create_snapshot_schedule(conninfo: request.Connection, schedule_view: Dict[str, Any]) -> Any:
     """
-    Get all the snapshots for a specific share within a Hammerspace environment.
+    Create a new share snapshot schedule.
 
     Args:
         conninfo (request.Connection): Connection to the Hammerspace Anvil
-        share_id (str): The uuid of the share
+        schedule_view (Dict[str, Any]): A dictionary representing the snapshot schedule to create.
 
     Returns:
-        List: Iterable list of snapshots taken for a particular share
+        json object: The created share snapshot schedule.
     """
-
-    method = 'GET'
-    uri = f'/mgmt/v1.2/rest/share-snapshots/snapshot-list/{share_id}'
+    method = 'POST'
+    uri = '/mgmt/v1.2/rest/share-snapshots'
     header = {'Accept': 'application/json'}
 
-    # Send request to API
+    return _request_processing(conninfo,
+                               method,
+                               uri,
+                               body=schedule_view,
+                               request_content_type='application/json',
+                               headers=header)
 
-    return _request_processing(conninfo, method, str(uri), headers=header)
+
+@request.request
+def update_snapshot_schedule(conninfo: request.Connection, identifier: str, schedule_view: Dict[str, Any]) -> Any:
+    """
+    Update an existing share snapshot schedule.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        identifier (str): The UUID of the snapshot schedule to update.
+        schedule_view (Dict[str, Any]): A dictionary with the updated properties for the schedule.
+
+    Returns:
+        json object: The updated share snapshot schedule.
+    """
+    method = 'PUT'
+    uri = f'/mgmt/v1.2/rest/share-snapshots/{identifier}'
+    header = {'Accept': 'application/json'}
+
+    return _request_processing(conninfo,
+                               method,
+                               uri,
+                               body=schedule_view,
+                               request_content_type='application/json',
+                               headers=header)
 
 
 # Delete one particular share snapshot from the Hammerspace environment
@@ -119,6 +144,150 @@ def delete_snapshot_schedule(conninfo: request.Connection, snapshot_id: str,
     uri.add_query_param('clear-snapshots', clear_snaps)
 
     # Send request to API
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+# Get list of snapshots for a particular share in the Hammerspace environment
+
+@request.request
+def get_snapshot_list(conninfo: request.Connection, share_id: str) -> Any:
+    """
+    Get all the snapshots for a specific share within a Hammerspace environment.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_id (str): The uuid of the share
+
+    Returns:
+        List: Iterable list of snapshots taken for a particular share
+    """
+
+    method = 'GET'
+    uri = f'/mgmt/v1.2/rest/share-snapshots/snapshot-list/{share_id}'
+    header = {'Accept': 'application/json'}
+
+    # Send request to API
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def create_immediate_snapshot(conninfo: request.Connection, share_identifier: str, snapshot_name: Optional[str] = None) -> Any:
+    """
+    Create an immediate share snapshot.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_identifier (str): The identifier (UUID) of the share.
+        snapshot_name (str, optional): The name for the snapshot.
+
+    Returns:
+        json object: Response containing the snapshot name.
+    """
+    method = 'POST'
+    uri = UriBuilder(path=f'/mgmt/v1.2/rest/share-snapshots/snapshot-create/{share_identifier}')
+    header = {'Accept': 'application/json'}
+
+    if snapshot_name:
+        uri.add_query_param('snapshot-name', snapshot_name)
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def delete_snapshot(conninfo: request.Connection, share_identifier: str, snapshot_name: str) -> Any:
+    """
+    Delete a specific share snapshot.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_identifier (str): The identifier (UUID) of the share.
+        snapshot_name (str): The name of the snapshot to delete.
+
+    Returns:
+        json object: Command result view.
+    """
+    method = 'POST'
+    uri = f'/mgmt/v1.2/rest/share-snapshots/snapshot-delete/{share_identifier}/{snapshot_name}'
+    header = {'Accept': 'application/json'}
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def clone_snapshot(conninfo: request.Connection,
+                     share_identifier: str,
+                     snapshot_name: str,
+                     destination_path: str,
+                     overwrite_destination: Optional[bool] = False) -> Any:
+    """
+    Clone a share snapshot to a new destination.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_identifier (str): The identifier (UUID) of the share.
+        snapshot_name (str): The name of the snapshot to clone.
+        destination_path (str): The destination path for the clone.
+        overwrite_destination (bool, optional): Overwrite if the destination path exists. Defaults to False.
+
+    Returns:
+        Response object from the server, typically a 202 Accepted response.
+    """
+    method = 'POST'
+    uri = UriBuilder(path=f'/mgmt/v1.2/rest/share-snapshots/clone-create/{share_identifier}')
+    header = {'Accept': 'application/json'}
+
+    uri.add_query_param('snapshot-name', snapshot_name)
+    uri.add_query_param('destination-path', destination_path)
+    if overwrite_destination:
+        uri.add_query_param('overwrite-destination', 'true')
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def restore_share_from_snapshot(conninfo: request.Connection, share_identifier: str, snapshot_name: str) -> Any:
+    """
+    Restore an entire share from a snapshot.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_identifier (str): The identifier (UUID) of the share to restore.
+        snapshot_name (str): The name of the snapshot to restore from.
+
+    Returns:
+        Response object from the server, typically a 202 Accepted response.
+    """
+    method = 'POST'
+    uri = f'/mgmt/v1.2/rest/share-snapshots/snapshot-restore/{share_identifier}/{snapshot_name}'
+    header = {'Accept': 'application/json'}
+
+    return _request_processing(conninfo, method, str(uri), headers=header)
+
+
+@request.request
+def restore_files_from_snapshot(conninfo: request.Connection,
+                                share_identifier: str,
+                                snapshot_name: str,
+                                filename: str) -> Any:
+    """
+    Restore specific files from a share snapshot.
+
+    Args:
+        conninfo (request.Connection): Connection to the Hammerspace Anvil
+        share_identifier (str): The identifier (UUID) of the share.
+        snapshot_name (str): The name of the snapshot to restore from.
+        filename (str): The path to the file or directory to restore within the snapshot.
+
+    Returns:
+        json object: Command result view.
+    """
+    method = 'POST'
+    uri = UriBuilder(path=f'/mgmt/v1.2/rest/share-snapshots/snapshot-restore-files/{share_identifier}/{snapshot_name}')
+    header = {'Accept': 'application/json'}
+
+    uri.add_query_param('filename', filename)
 
     return _request_processing(conninfo, method, str(uri), headers=header)
 

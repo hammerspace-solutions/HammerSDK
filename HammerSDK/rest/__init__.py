@@ -23,10 +23,21 @@
 SDK_Version = "5.1.18"
 
 from HammerSDK.rest import (
+    ad,
     auth,
+    backup,
+    base_storage_volumes,
+    cntl,
+    disk_drives,
+    dnss,
+    file_snapshots,
+    gateways,
     logical_volumes,
+    network_interfaces,
     nodes,
+    ntp,
     objectives,
+    reports,
     shares,
     share_snapshots,
     sites,

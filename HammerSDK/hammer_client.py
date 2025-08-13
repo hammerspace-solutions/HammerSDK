@@ -76,10 +76,21 @@ class HammerClient:
 
     # rest module attributes
 
+    ad: Any
     auth: Any
+    backup: Any
+    base_storage_volumes: Any
+    cntl: Any
+    disk_drives: Any
+    dnss: Any
+    file_snapshots: Any
+    gateways: Any
     nodes: Any
     logical_volumes: Any
+    network_interfaces: Any
+    ntp: Any
     objectives: Any
+    reports: Any
     shares: Any
     share_snapshots: Any
     sites: Any
@@ -91,9 +102,10 @@ class HammerClient:
         address: str,
         port: int = DEFAULT_REST_PORT,
         timeout: Optional[int] = None,
+        verify: Union[bool, str] = True,
     ) -> None:
 
-        self.conninfo = request.Connection(address, port, timeout=timeout)
+        self.conninfo = request.Connection(address, port, timeout=timeout, verify=verify)
 
         # Opening the connection will create a session to Hammerspace
 
