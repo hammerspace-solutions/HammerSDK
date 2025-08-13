@@ -30,7 +30,7 @@ pip install sphinx-autoapi
 # Build the HammerSDK library and install it
 
 cd HammerSDK
-rm -rf dist *.egg-info
+rm -rf dist build *.egg-info
 python -m build
 pip install .
 
