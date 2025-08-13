@@ -1,0 +1,28 @@
+# --------------------------------------------------------------------------
+# HammerSDK
+#
+# Build the SDK for the Hammerspace API
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HammerSDK"
+version = "5.1.18"
+description = "Library of  routines for the HammerSDK"
+authors = [{name = "Michael Kade", email = "mike.kade@hammerspace.com"}]
+license = "MIT"
+license-files = ["LICENSE.txt"]
+readme = "README.txt"
+requires-python = ">=3.10"
+keywords = ["Hammerspace SDK", "HammerSDK"]
+dependencies = ["datetime",
+                "typing",
+                "argparse",
+                "typing_extensions",
+                "dataclasses_json",
+                "requests"]
+
+[project.urls]
+Homepage = "http://www.hammerspace.com"

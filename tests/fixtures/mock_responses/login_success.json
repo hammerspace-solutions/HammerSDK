@@ -1,0 +1,9 @@
+{
+    "session": {
+        "id": "sess_xyz123",
+        "username": "admin",
+        "expires": "2023-12-31T23:59:59Z",
+        "permissions": ["read", "write", "admin"]
+    },
+    "status": "success"
+}

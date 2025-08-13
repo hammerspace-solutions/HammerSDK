@@ -1,0 +1,23 @@
+[
+    {
+        "id": "node-1",
+        "hostname": "hs-node-01",
+        "status": "online",
+        "swVersion": {
+            "version": "5.1.18",
+            "buildDate": "2023-05-15"
+        },
+        "platformServices": [
+            {"name": "nfs", "status": "running"}
+        ]
+    },
+    {
+        "id": "node-2",
+        "hostname": "hs-node-02",
+        "status": "online",
+        "swVersion": {
+            "version": "5.1.18",
+            "buildDate": "2023-05-15"
+        }
+    }
+]
